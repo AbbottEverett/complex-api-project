@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/costumes');
+const tagsRoute = require('./tags');
+
+router.use('/:id/tags', tagsRoute);
 
 router.get('/', ctrl.getAll);
 

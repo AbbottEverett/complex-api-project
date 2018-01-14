@@ -18,7 +18,7 @@ function create (req, res, next) {
   const data = model.createCostume(req.body);
 
   if (data.errors) {
-    return next({ status: 400, message: `Could not create new food`, errors: data.errors });
+    return next({ status: 400, message: `Could not create new costume`, errors: data.errors });
   }
 
   res.status(201).json({ data });
@@ -35,7 +35,7 @@ function update (req, res, next) {
 function remove (req, res, next) {
   const data = model.removeCostume(req.params.id)
   if (data.errors) {
-    return next({ status: 400, message: `Could not update costume at id: ${req.params.id}`, errors: data.errors });
+    return next({ status: 400, message: `Could not remove costume at id: ${req.params.id}`, errors: data.errors });
   }
   res.status(200).json({ data });
 }

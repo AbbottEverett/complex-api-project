@@ -1,5 +1,10 @@
 const shortId = require('shortid');
-const costumes = [];
+const costumes = [{
+    id: '1',
+    name: 'hat',
+    price: 9.99,
+    tags: []
+}];
 
 function getAllCostumes() {
   return costumes;
@@ -10,7 +15,7 @@ function getOneCostume(id) {
   let errors = [];
 
   if (!response) {
-    errors.push('Please make sure id is inputted correctly');
+    errors.push('Please make sure id is inputted correctly.');
     response = { errors };
   }
 
@@ -118,4 +123,4 @@ function checkDataType (str) {
   return result;
 }
 
-module.exports = { getAllCostumes, getOneCostume, createCostume, updateCostume, removeCostume };
+module.exports = { getAllCostumes, getOneCostume, createCostume, updateCostume, removeCostume, getItemById, checkDataType, costumes };
