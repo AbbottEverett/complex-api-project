@@ -19,8 +19,6 @@ function getAllTags (parentId) {
 
 function getOneTag (parentId, tagId) {
   const parentData = parent.getItemById(parentId, parent.costumes);
-  console.log(parentData)
-  let data;
   let errors = [];
   let response;
 
@@ -28,18 +26,17 @@ function getOneTag (parentId, tagId) {
     errors.push('Please make sure costume id is inputted correctly.');
   } else {
     const tagsArray = parentData.tags;
-    data = parent.getItemById(tagId, tagsArray);
+    response = parent.getItemById(tagId, tagsArray);
   }
 
-  if (!data) {
+  if (!response) {
     errors.push('Please make sure tag id is inputted correctly.');
   }
 
   if (errors.length > 0) {
     response = { errors };
-  } else {
-    response = { data };
   }
+
   return response;
 }
 
@@ -62,6 +59,44 @@ function createTag (parentId, input) {
       color: input.color
     };
     parentData.tags.push(tag);
+    response = { tag };
+  }
+
+  return response;
+}
+
+function updateTag (parentId, tagId, input) {
+  const parentData = parent.getItemById(parentId, parent.costumes);
+  const tag = getOneTag(parentId, tagId);
+  let errors = validateParams(input);
+  let response;
+
+  if (tag.errors) {
+    errors = errors.concat(tag.errors);
+  }
+
+  if (errors.length > 0) {
+    response = { errors };
+  } else {
+    tag.name = input.name;
+    tag.color = input.color;
+    response = { tag };
+  }
+
+  return response;
+}
+
+function removeTag (parentId, tagId) {
+  const parentData = parent.getItemById(parentId, parent.costumes);
+  const tag = getOneTag(parentId, tagId);
+  let index;
+  let response;
+
+  if (tag.errors) {
+    response = tag.errors;
+  } else {
+    index = parentData.tags.indexOf(tag);
+    parentData.tags.splice(index, 1);
     response = { tag };
   }
 
@@ -95,4 +130,4 @@ function validateParams (input) {
   return errors;
 }
 
-module.exports = { getAllTags, getOneTag, createTag };
+module.exports = { getAllTags, getOneTag, createTag, removeTag, updateTag };

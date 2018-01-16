@@ -28,11 +28,23 @@ function create (req, res, next) {
 }
 
 function update (req, res, next) {
-  res.status(200).json({ data: `my nested path works! costumeId: ${req.params.id} tagId:${req.params.tagId}` });
+  const data = model.updateTag(req.params.id, req.params.tagId, req.body);
+
+  if (data.errors) {
+    return next({ status: 400, message: `Could not update tag at id: ${req.params.tagId}`, errors: data.errors });
+  }
+
+  res.status(200).json({ data });
 }
 
 function remove (req, res, next) {
-  res.status(200).json({ data: `my nested path works! costumeId: ${req.params.id} tagId:${req.params.tagId}` });
+  const data = model.removeTag(req.params.id, req.params.tagId);
+
+  if (data.errors) {
+    return next({ status: 404, message: `Could not remove tag at id: ${req.params.tagId}`, errors: data.errors });
+  }
+
+  res.status(200).json({ data });
 }
 
 module.exports = { getAll, getOne, create, update, remove };

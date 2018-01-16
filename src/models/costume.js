@@ -3,7 +3,7 @@ const costumes = [{
     id: '1',
     name: 'hat',
     price: 9.99,
-    tags: []
+    tags: [{ id: '1', name:'red' }]
 }];
 
 function getAllCostumes() {
@@ -23,6 +23,7 @@ function getOneCostume(id) {
 }
 
 function createCostume(input) {
+  console.log(typeof input.price);
   const errors = validateParams(input);
   let response;
 
