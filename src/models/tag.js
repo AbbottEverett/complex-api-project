@@ -1,8 +1,12 @@
 const parent = require('./costume');
 const shortId = require('shortid');
+const fs = require('fs');
+const path = require('path');
+const jsonPath = path.join(__dirname, '..', '..', 'costume.json');
 
 function getAllTags (parentId) {
-  const parentData = parent.getItemById(parentId, parent.costumes);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  const parentData = getItemById(parentId, file);
   let errors = [];
   let response;
 
@@ -18,7 +22,8 @@ function getAllTags (parentId) {
 }
 
 function getOneTag (parentId, tagId) {
-  const parentData = parent.getItemById(parentId, parent.costumes);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  const parentData = getItemById(parentId, file);
   let errors = [];
   let response;
 
@@ -26,7 +31,7 @@ function getOneTag (parentId, tagId) {
     errors.push('Please make sure costume id is inputted correctly.');
   } else {
     const tagsArray = parentData.tags;
-    response = parent.getItemById(tagId, tagsArray);
+    response = getItemById(tagId, tagsArray);
   }
 
   if (!response) {
@@ -41,9 +46,9 @@ function getOneTag (parentId, tagId) {
 }
 
 function createTag (parentId, input) {
-  const parentData = parent.getItemById(parentId, parent.costumes);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  const parentData = getItemById(parentId, file);
   let errors = validateParams(input);
-
   let response;
 
   if (!parentData) {
@@ -59,6 +64,8 @@ function createTag (parentId, input) {
       color: input.color
     };
     parentData.tags.push(tag);
+    const contentsAsJSON = JSON.stringify(file);
+    fs.writeFileSync(jsonPath, contentsAsJSON);
     response = { tag };
   }
 
@@ -66,8 +73,10 @@ function createTag (parentId, input) {
 }
 
 function updateTag (parentId, tagId, input) {
-  const parentData = parent.getItemById(parentId, parent.costumes);
-  const tag = getOneTag(parentId, tagId);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  const parentData = getItemById(parentId, file);
+  const tagsArray = parentData.tags;
+  const tag = getItemById(tagId, tagsArray);
   let errors = validateParams(input);
   let response;
 
@@ -81,13 +90,16 @@ function updateTag (parentId, tagId, input) {
     tag.name = input.name;
     tag.color = input.color;
     response = { tag };
+    const contentsAsJSON = JSON.stringify(file);
+    fs.writeFileSync(jsonPath, contentsAsJSON);
   }
 
   return response;
 }
 
 function removeTag (parentId, tagId) {
-  const parentData = parent.getItemById(parentId, parent.costumes);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  const parentData = getItemById(parentId, file);
   const tag = getOneTag(parentId, tagId);
   let index;
   let response;
@@ -96,8 +108,10 @@ function removeTag (parentId, tagId) {
     response = tag.errors;
   } else {
     index = parentData.tags.indexOf(tag);
-    parentData.tags.splice(index, 1);
     response = { tag };
+    parentData.tags.splice(index, 1);
+    const contentsAsJSON = JSON.stringify(file);
+    fs.writeFileSync(jsonPath, contentsAsJSON);
   }
 
   return response;
@@ -107,7 +121,7 @@ function validateParams (input) {
   const errors = [];
   const type = {};
   for (let key in input) {
-    type[key] = parent.checkDataType(input[key]);
+    type[key] = checkDataType(input[key]);
   }
 
   if (type.name !== 'string') {
@@ -128,6 +142,30 @@ function validateParams (input) {
   }
 
   return errors;
+}
+
+function checkDataType (str) {
+  const data = parseInt(str);
+  const boolCheck = ['true', 'false'];
+  let result;
+
+  if (Number.isNaN(data)) {
+    boolCheck.forEach((bool) => {
+      if (str === bool) {
+        result = bool;
+      }
+    });
+    if (!result) {
+      result = 'string';
+    }
+  } else {
+    result = 'number';
+  }
+  return result;
+}
+
+function getItemById(id, array) {
+  return array.find(item => item.id === id);
 }
 
 module.exports = { getAllTags, getOneTag, createTag, removeTag, updateTag };

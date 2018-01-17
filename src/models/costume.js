@@ -3,13 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const jsonPath = path.join(__dirname, '..', '..', 'costume.json');
 
-const costumes = [{
-    id: '1',
-    name: 'hat',
-    price: 9.99,
-    tags: [{ id: '1', name:'red' }]
-}];
-
 function getAllCostumes() {
   const file = JSON.parse(fs.readFileSync(jsonPath));
   return file;
@@ -138,4 +131,4 @@ function checkDataType (str) {
   return result;
 }
 
-module.exports = { getAllCostumes, getOneCostume, createCostume, updateCostume, removeCostume, getItemById, checkDataType, costumes };
+module.exports = { getAllCostumes, getOneCostume, createCostume, updateCostume, removeCostume };
