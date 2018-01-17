@@ -1,4 +1,8 @@
 const shortId = require('shortid');
+const fs = require('fs');
+const path = require('path');
+const jsonPath = path.join(__dirname, '..', '..', 'costume.json');
+
 const costumes = [{
     id: '1',
     name: 'hat',
@@ -7,11 +11,13 @@ const costumes = [{
 }];
 
 function getAllCostumes() {
-  return costumes;
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  return file;
 }
 
 function getOneCostume(id) {
-  let response = getItemById(id, costumes);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  let response = getItemById(id, file);
   let errors = [];
 
   if (!response) {
@@ -23,7 +29,7 @@ function getOneCostume(id) {
 }
 
 function createCostume(input) {
-  console.log(typeof input.price);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
   const errors = validateParams(input);
   let response;
 
@@ -37,7 +43,9 @@ function createCostume(input) {
       description: input.description,
       tags: []
     };
-    costumes.push(costume);
+    file.push(costume);
+    const contentsAsJSON = JSON.stringify(file);
+    fs.writeFileSync(jsonPath, contentsAsJSON);
     response = { costume };
   }
 
@@ -45,7 +53,8 @@ function createCostume(input) {
 }
 
 function updateCostume(id, input) {
-  const data =  getItemById(id, costumes);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  const data = getItemById(id, file);
   let errors = validateParams(input);
   let response;
 
@@ -59,6 +68,8 @@ function updateCostume(id, input) {
     data.name = input.name;
     data.price = input.price;
     data.description = input.description;
+    const contentsAsJSON = JSON.stringify(file);
+    fs.writeFileSync(jsonPath, contentsAsJSON);
     response = { data };
   }
 
@@ -66,8 +77,8 @@ function updateCostume(id, input) {
 }
 
 function removeCostume(id) {
-  const data = getItemById(id, costumes);
-  const index = costumes.indexOf(data);
+  const file = JSON.parse(fs.readFileSync(jsonPath));
+  const data = getItemById(id, file);
   let errors = [];
   let response;
 
@@ -75,8 +86,11 @@ function removeCostume(id) {
     errors.push('Please make sure id is inputted correctly');
     response = { errors };
   } else {
+    const index = file.indexOf(data);
     response = { data }
-    costumes.splice(index, 1);
+    file.splice(index, 1);
+    const contentsAsJSON = JSON.stringify(file);
+    fs.writeFileSync(jsonPath, contentsAsJSON);
   }
 
   return response;
